@@ -47,9 +47,14 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, String firstName, Integer userId ){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getAuthorities());
+        claims.put("firstname", firstName);
+        claims.put("user_id", userId);
+        return generateToken(claims, userDetails);
     }
+
     public boolean isTokenValid( String token, UserDetails userDetails){
         final String userName = extractUsername(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
