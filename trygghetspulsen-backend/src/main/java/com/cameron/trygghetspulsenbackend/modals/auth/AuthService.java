@@ -26,7 +26,7 @@ public class AuthService {
                 .role(Role.USER)
                 .build();
         repository.save(user);
-        var jwtToken = jwtService.generateToken(user, user.getFirstName(), user.getId());
+        var jwtToken = jwtService.generateToken(user, user.getFirstName(), user.getId(), user.getRole());
         return AuthResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -40,7 +40,7 @@ public class AuthService {
                 )
         );
         var user = repository.findByEmail(request.getEmail()).orElseThrow(); // add exception
-        var jwtToken = jwtService.generateToken(user, user.getFirstName(), user.getId());
+        var jwtToken = jwtService.generateToken(user, user.getFirstName(), user.getId(), user.getRole());
         return AuthResponse.builder()
                 .token(jwtToken)
                 .build();

@@ -26,6 +26,7 @@ public class AppSecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests( registry -> registry
                         .requestMatchers("api/v1/auth/**").permitAll()
+                        .requestMatchers("api/v1/admin/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

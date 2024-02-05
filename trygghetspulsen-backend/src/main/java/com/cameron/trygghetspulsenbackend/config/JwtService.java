@@ -1,6 +1,7 @@
 package com.cameron.trygghetspulsenbackend.config;
 
 
+import com.cameron.trygghetspulsenbackend.modals.user.Role;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -47,9 +48,9 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String generateToken(UserDetails userDetails, String firstName, Integer userId ){
+    public String generateToken(UserDetails userDetails, String firstName, Integer userId, Role role){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities());
+        claims.put("role", role.name());
         claims.put("firstname", firstName);
         claims.put("user_id", userId);
         return generateToken(claims, userDetails);
