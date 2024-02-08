@@ -42,15 +42,22 @@ public class EventController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Event> updateEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> updateEvent(@RequestBody Event event, @PathVariable Integer id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().contains("ADMIN"))) {
-                eventService.updateEvent(event);
-                return ResponseEntity.ok(event);
+                Event existingEvent = eventService.getEventById(id);
+                if (existingEvent == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                } else {
+                    eventService.updateEvent(event);
+                    return ResponseEntity.ok(event);
+                }
+
+
             }
             else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -74,6 +81,22 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity <Event> getAllEvents (@PathVariable Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().contains("ADMIN") || a.getAuthority().equals("USER"))) {
+            Event event = eventService.getEventById(id);
+            return ResponseEntity.ok(event);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
